@@ -1,0 +1,151 @@
+// Source code is decompiled from a .class file using FernFlower decompiler.
+import java.awt.BorderLayout;
+import java.awt.Component;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+
+public class HotelManagementUI {
+   public HotelManagementUI() {
+   }
+
+   public static void main(String[] args) {
+      JFrame frame = new JFrame("Hotel Management System");
+      frame.setDefaultCloseOperation(3);
+      frame.setSize(800, 600);
+      JTabbedPane tabbedPane = new JTabbedPane();
+      tabbedPane.addTab("Reservations", createReservationsPanel());
+      tabbedPane.addTab("Rooms", createRoomsPanel());
+      tabbedPane.addTab("Guests", createGuestsPanel());
+      tabbedPane.addTab("Staff", createStaffPanel());
+      tabbedPane.addTab("Maintenance", createMaintenancePanel());
+      tabbedPane.addTab("Transactions", createTransactionsPanel());
+      frame.add(tabbedPane);
+      frame.setVisible(true);
+   }
+
+   private static JPanel createReservationsPanel() {
+      JPanel panel = new JPanel(new BorderLayout());
+      String[] columns = new String[]{"Reservation ID", "Guest Name", "Room ID", "Start Date", "End Date"};
+      Object[][] data = new Object[0][];
+      JTable table = new JTable(data, columns);
+      JScrollPane scrollPane = new JScrollPane(table);
+      panel.add(scrollPane, "Center");
+      JPanel buttonPanel = new JPanel();
+      JButton addButton = new JButton("Add Reservation");
+      JButton editButton = new JButton("Edit Reservation");
+      JButton deleteButton = new JButton("Delete Reservation");
+      addButton.addActionListener((e) -> {
+         addReservation();
+      });
+      editButton.addActionListener((e) -> {
+         editReservation();
+      });
+      deleteButton.addActionListener((e) -> {
+         deleteReservation();
+      });
+      buttonPanel.add(addButton);
+      buttonPanel.add(editButton);
+      buttonPanel.add(deleteButton);
+      panel.add(buttonPanel, "South");
+      return panel;
+   }
+
+   private static void addReservation() {
+      JOptionPane.showMessageDialog((Component)null, "Add Reservation functionality to be implemented");
+   }
+
+   private static void editReservation() {
+      JOptionPane.showMessageDialog((Component)null, "Edit Reservation functionality to be implemented");
+   }
+
+   private static void deleteReservation() {
+      JOptionPane.showMessageDialog((Component)null, "Delete Reservation functionality to be implemented");
+   }
+
+   private static JPanel createRoomsPanel() {
+      JPanel panel = new JPanel(new BorderLayout());
+      String[] roomColumns = new String[]{"Room ID", "Location ID", "Room Type", "Price", "In Good Condition"};
+      Object[][] roomData = new Object[0][];
+      JTable roomTable = new JTable(roomData, roomColumns);
+      JScrollPane roomScrollPane = new JScrollPane(roomTable);
+      panel.add(roomScrollPane, "Center");
+      JPanel roomButtonPanel = new JPanel();
+      JButton addRoomButton = new JButton("Add Room");
+      JButton editRoomButton = new JButton("Edit Room");
+      JButton deleteRoomButton = new JButton("Delete Room");
+      roomButtonPanel.add(addRoomButton);
+      roomButtonPanel.add(editRoomButton);
+      roomButtonPanel.add(deleteRoomButton);
+      panel.add(roomButtonPanel, "South");
+      return panel;
+   }
+
+   private static JPanel createGuestsPanel() {
+      JPanel panel = new JPanel(new BorderLayout());
+      String[] guestColumns = new String[]{"Guest ID", "Name", "Payment Method"};
+      Object[][] guestData = new Object[0][];
+      JTable guestTable = new JTable(guestData, guestColumns);
+      JScrollPane guestScrollPane = new JScrollPane(guestTable);
+      panel.add(guestScrollPane, "Center");
+      JPanel guestButtonPanel = new JPanel();
+      JButton addGuestButton = new JButton("Add Guest");
+      JButton editGuestButton = new JButton("Edit Guest");
+      JButton deleteGuestButton = new JButton("Delete Guest");
+      guestButtonPanel.add(addGuestButton);
+      guestButtonPanel.add(editGuestButton);
+      guestButtonPanel.add(deleteGuestButton);
+      panel.add(guestButtonPanel, "South");
+      return panel;
+   }
+
+   private static JPanel createStaffPanel() {
+      JPanel panel = new JPanel(new BorderLayout());
+      String[] staffColumns = new String[]{"Staff ID", "Name", "Role", "Location ID"};
+      Object[][] staffData = new Object[0][];
+      JTable staffTable = new JTable(staffData, staffColumns);
+      JScrollPane staffScrollPane = new JScrollPane(staffTable);
+      panel.add(staffScrollPane, "Center");
+      JPanel staffButtonPanel = new JPanel();
+      JButton addStaffButton = new JButton("Add Staff");
+      JButton editStaffButton = new JButton("Edit Staff");
+      JButton deleteStaffButton = new JButton("Delete Staff");
+      staffButtonPanel.add(addStaffButton);
+      staffButtonPanel.add(editStaffButton);
+      staffButtonPanel.add(deleteStaffButton);
+      panel.add(staffButtonPanel, "South");
+      return panel;
+   }
+
+   private static JPanel createMaintenancePanel() {
+      JPanel panel = new JPanel(new BorderLayout());
+      String[] maintenanceColumns = new String[]{"Room ID", "Staff ID", "Date", "In Good Condition"};
+      Object[][] maintenanceData = new Object[0][];
+      JTable maintenanceTable = new JTable(maintenanceData, maintenanceColumns);
+      JScrollPane maintenanceScrollPane = new JScrollPane(maintenanceTable);
+      panel.add(maintenanceScrollPane, "Center");
+      JPanel maintenanceButtonPanel = new JPanel();
+      JButton addMaintenanceButton = new JButton("Add Maintenance Record");
+      JButton editMaintenanceButton = new JButton("Edit Maintenance Record");
+      JButton deleteMaintenanceButton = new JButton("Delete Maintenance Record");
+      maintenanceButtonPanel.add(addMaintenanceButton);
+      maintenanceButtonPanel.add(editMaintenanceButton);
+      maintenanceButtonPanel.add(deleteMaintenanceButton);
+      panel.add(maintenanceButtonPanel, "South");
+      return panel;
+   }
+
+   private static JPanel createTransactionsPanel() {
+      JPanel panel = new JPanel(new BorderLayout());
+      String[] columns = new String[]{"Transaction ID", "Reservation ID", "Description", "Amount"};
+      Object[][] data = new Object[0][];
+      JTable table = new JTable(data, columns);
+      JScrollPane scrollPane = new JScrollPane(table);
+      panel.add(scrollPane, "Center");
+      return panel;
+   }
+}
