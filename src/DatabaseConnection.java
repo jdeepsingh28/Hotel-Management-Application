@@ -5,12 +5,16 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DatabaseConnection {
-    private static final String DATABASE_URL = "jdbc:sqlserver://YourServer;databaseName=YourDatabase";
-    private static final String USERNAME = "yourUsername";
-    private static final String PASSWORD = "yourPassword";
+    private static final String CONNECTION_URL = "jdbc:sqlserver://cxp-sql-02.cxp.cwru.edu\\jrt108;"
+                        + "database=Hotel;"
+                        + "user=dbuser;"
+                        + "password=csds341143sdsc;"
+                        + "encrypt=true;"
+                        + "trustServerCertificate=true;"
+                        + "loginTimeout=15;";
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
+        return DriverManager.getConnection(CONNECTION_URL);
     }
 
     public static Object[][] getReservationData() {
