@@ -1,0 +1,118 @@
+// Source code is decompiled from a .class file using FernFlower decompiler.
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class DatabaseConnection {
+   private static final String DATABASE_URL = "jdbc:sqlserver://YourServer;databaseName=YourDatabase";
+   private static final String USERNAME = "yourUsername";
+   private static final String PASSWORD = "yourPassword";
+
+   public DatabaseConnection() {
+   }
+
+   public static Connection getConnection() throws SQLException {
+      return DriverManager.getConnection("jdbc:sqlserver://YourServer;databaseName=YourDatabase", "yourUsername", "yourPassword");
+   }
+
+   public static Object[][] getReservationData() {
+      try {
+         Throwable var0 = null;
+         Object var1 = null;
+
+         try {
+            Connection conn = getConnection();
+
+            Object[][] var10000;
+            try {
+               Statement stmt = conn.createStatement();
+
+               try {
+                  ResultSet rs = stmt.executeQuery("SELECT * FROM reservations");
+
+                  try {
+                     int rowCount = getRowCount(rs);
+                     int columnCount = rs.getMetaData().getColumnCount();
+                     Object[][] data = new Object[rowCount][columnCount];
+                     int rowIndex = 0;
+
+                     while(true) {
+                        if (!rs.next()) {
+                           var10000 = data;
+                           break;
+                        }
+
+                        for(int i = 0; i < columnCount; ++i) {
+                           data[rowIndex][i] = rs.getObject(i + 1);
+                        }
+
+                        ++rowIndex;
+                     }
+                  } finally {
+                     if (rs != null) {
+                        rs.close();
+                     }
+
+                  }
+               } catch (Throwable var31) {
+                  if (var0 == null) {
+                     var0 = var31;
+                  } else if (var0 != var31) {
+                     var0.addSuppressed(var31);
+                  }
+
+                  if (stmt != null) {
+                     stmt.close();
+                  }
+
+                  throw var0;
+               }
+
+               if (stmt != null) {
+                  stmt.close();
+               }
+            } catch (Throwable var32) {
+               if (var0 == null) {
+                  var0 = var32;
+               } else if (var0 != var32) {
+                  var0.addSuppressed(var32);
+               }
+
+               if (conn != null) {
+                  conn.close();
+               }
+
+               throw var0;
+            }
+
+            if (conn != null) {
+               conn.close();
+            }
+
+            return var10000;
+         } catch (Throwable var33) {
+            if (var0 == null) {
+               var0 = var33;
+            } else if (var0 != var33) {
+               var0.addSuppressed(var33);
+            }
+
+            throw var0;
+         }
+      } catch (SQLException var34) {
+         var34.printStackTrace();
+         return new Object[0][0];
+      }
+   }
+
+   public static int getRowCount(ResultSet rs) throws SQLException {
+      int rowCount;
+      for(rowCount = 0; rs.next(); ++rowCount) {
+      }
+
+      rs.beforeFirst();
+      return rowCount;
+   }
+}
