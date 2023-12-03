@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "HotelManagementUI",
+            "request": "launch",
+            "mainClass": "HotelManagementUI",
+            "projectName": "HotelManagementApplication_3c167595"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
