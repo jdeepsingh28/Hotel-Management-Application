@@ -213,14 +213,18 @@ public class Main {
         System.out.print("Enter new room id: ")
         String roomId = stdin.nextLine();
 
-        CallableStatement changeReservationStatement = connection.prepareCall("{call dbo.deleteReservation(?)}");
-        changeReservationStatement.setInt(1, reservationId);
-        createReservationStatement.setDate(2, startDate);
-        createReservationStatement.setDate(3, endDate);
-        createReservationStatement.setString(4, roomId);
-        changeReservationStatement.execute();
-        connection.commit();
-        System.out.println("Reservation changed to " + startDate + " to " + endDate + " in room " + roomId);
+        if(cheackRoomReservation(roomId, startDate, endDate)){
+            CallableStatement changeReservationStatement = connection.prepareCall("{call dbo.deleteReservation(?)}");
+            changeReservationStatement.setInt(1, reservationId);
+            createReservationStatement.setDate(2, startDate);
+            createReservationStatement.setDate(3, endDate);
+            createReservationStatement.setString(4, roomId);
+            changeReservationStatement.execute();
+            connection.commit();
+            System.out.println("Reservation changed to " + startDate + " to " + endDate + " in room " + roomId);
+        } else {
+            System.out.println("Room " + roomId + "cannot be booked during for that time please try a different room or different dates.")
+        }
     }
 
     boolean checkRoomReservation(String roomId, Date start_date, Date end_date) throws SQLException{
