@@ -173,6 +173,16 @@ public class Main {
         System.out.println("Reservation checked out");
     }
 
+    void deleteReservation() throws SQLException {
+        int reservationId = searchReservationByGuestName("reserved");
+
+        CallableStatement deleteReservationStatement = connection.prepareCall("{call dbo.deleteReservation(?)}");
+        deleteReservationStatement.setInt(1, reservationId);
+        deleteReservationStatement.execute();
+        connection.commit();
+        System.out.println("Reservation cancelled");
+    }
+
     void quit() {
         System.exit(0);
     }
