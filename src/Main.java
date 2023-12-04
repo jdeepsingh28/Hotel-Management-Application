@@ -223,6 +223,23 @@ public class Main {
         System.out.println("Reservation changed to " + startDate + " to " + endDate + " in room " + roomId);
     }
 
+    boolean checkRoomReservation(String roomId, Date start_date, Date end_date) throws SQLException{
+        CallableStatement roomSearchStatement = conneciton.prepareCall("{call dbo.searchReservationByRoomId(?)}");
+        roomSearchStatement.setString(1, roomId);
+        ResultSet results = searchReservationsStatement.executeQuery();
+        int i = 0;
+        while (results.next()) {
+            Date listStartDate = dateFormatter.format(results.getDate("start_date"));
+            Date listEndDate = dateFormatter.format(results.getDate("end_date"));
+            
+            if((start_date.before(listEndDate) AND start_date.after(listStartDate)) OR (end_date.before(listEndDate) AND end_date.after(listStartDate)))
+                return false;
+
+            i++;
+        }
+        return true;
+    }
+
     void updateStaffRole() throws SQLException {
         System.out.print("Enter Staff ID to update role: ");
         int staffId = Integer.parseInt(stdin.nextLine());
