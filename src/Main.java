@@ -183,6 +183,38 @@ public class Main {
         System.out.println("Reservation cancelled");
     }
 
+    void changeReservation() throws SQLException {
+        int reservationId = searchReservationByGuestName("reserved");
+
+        System.out.print("Enter new start date (e.g. 6/1/23): ");
+        Date startDate;
+        try {
+            var parsedDate = dateFormatter.parse(stdin.nextLine());
+            startDate = new Date(parsedDate.getTime());
+        } catch (ParseException e) {
+            System.out.println("invalid date format");
+            return;
+        }
+
+        System.out.print("Enter new end date (e.g. 6/14/23): ");
+        Date endDate;
+        try {
+            var parsedDate = dateFormatter.parse(stdin.nextLine());
+            endDate = new Date(parsedDate.getTime());
+        } catch (ParseException e) {
+            System.out.println("invalid date format");
+            return;
+        }
+
+        CallableStatement changeReservationStatement = connection.prepareCall("{call dbo.deleteReservation(?)}");
+        changeReservationStatement.setInt(1, reservationId);
+        createReservationStatement.setDate(2, startDate);
+        createReservationStatement.setDate(3, endDate);
+        changeReservationStatement.execute();
+        connection.commit();
+        System.out.println("Reservation changed to " + startDate + " to " + endDate);
+    }
+
     void quit() {
         System.exit(0);
     }
