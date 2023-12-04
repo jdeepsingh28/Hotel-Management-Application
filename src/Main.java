@@ -40,6 +40,11 @@ public class Main {
             new MenuEntry("Create Reservation - Existing Guest", this::createReservationExistingGuest),
             new MenuEntry("Check In Reservation", this::checkIn),
             new MenuEntry("Check Out Reservation", this::checkOut),
+            new MenuEntry("Assign Room for Maintenance", this::assignRoomForMaintenance),
+            new MenuEntry("Log Maintenance Completion", this::logMaintenanceCompletion),
+            new MenuEntry("Remove Maintenance Assignment", this::removeMaintenanceAssignment),
+            new MenuEntry("Update Staff Role", this::updateStaffRole),
+            new MenuEntry("Get Room Price", this::getRoomPrice),
             new MenuEntry("Quit", this::quit)
     );
 
@@ -216,6 +221,74 @@ public class Main {
         changeReservationStatement.execute();
         connection.commit();
         System.out.println("Reservation changed to " + startDate + " to " + endDate + " in room " + roomId);
+    }
+
+    void updateStaffRole() throws SQLException {
+        System.out.print("Enter Staff ID to update role: ");
+        int staffId = Integer.parseInt(stdin.nextLine());
+
+        System.out.print("Enter new role for the staff: ");
+        String newRole = stdin.nextLine();
+
+        DatabaseConnection.updateStaffRole(staffId, newRole);
+        System.out.println("Staff role updated.");
+    }
+
+    void getRoomPrice() {
+        try {
+            System.out.print("Enter Room ID to get price: ");
+            String roomId = stdin.nextLine();
+    
+            Long price = DatabaseConnection.getRoomPrice(roomId);
+            if (price != null) {
+                System.out.println("Price for room " + roomId + " is: " + price);
+            } else {
+                System.out.println("Room not found or price unavailable.");
+            }
+        } catch (SQLException e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+    }    
+
+    void removeMaintenanceAssignment() throws SQLException {
+        System.out.print("Enter Room ID to remove maintenance assignment: ");
+        String roomId = stdin.nextLine();
+    
+        System.out.print("Enter Staff ID for the assignment: ");
+        int staffId = Integer.parseInt(stdin.nextLine());
+    
+        DatabaseConnection.removeMaintenanceAssignment(roomId, staffId);
+        System.out.println("Maintenance assignment removed.");
+    }
+
+    void assignRoomForMaintenance() throws SQLException {
+        System.out.print("Enter Room ID: ");
+        String roomId = stdin.nextLine();
+
+        System.out.print("Enter Staff ID: ");
+        int staffId = Integer.parseInt(stdin.nextLine());
+
+        DatabaseConnection.assignRoomForMaintenance(roomId, staffId);
+        System.out.println("Room assigned for maintenance.");
+    }
+
+    void logMaintenanceCompletion() throws SQLException {
+        System.out.print("Enter Room ID: ");
+        String roomId = stdin.nextLine();
+
+        System.out.print("Enter Staff ID: ");
+        int staffId = Integer.parseInt(stdin.nextLine());
+
+        System.out.print("Enter Maintenance Date (YYYY-MM-DD): ");
+        Date maintenanceDate = Date.valueOf(stdin.nextLine());
+
+        System.out.print("Is the room in good condition? (true/false): ");
+        boolean inGoodCondition = Boolean.parseBoolean(stdin.nextLine());
+
+        DatabaseConnection.logMaintenanceCompletion(roomId, staffId, maintenanceDate, inGoodCondition);
+        System.out.println("Maintenance completion logged.");
     }
 
     void quit() {
