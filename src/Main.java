@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -35,19 +36,60 @@ public class Main {
     }
 
     final List<MenuEntry> mainMenu = List.of(
-            new MenuEntry("Create Reservation", this::createReservation),
+            new MenuEntry("Create Reservation - New Guest", this::createReservationNewGuest),
+            new MenuEntry("Create Reservation - Existing Guest", this::createReservationExistingGuest),
+            new MenuEntry("Check In Reservation", this::checkIn),
+            new MenuEntry("Check Out Reservation", this::checkOut),
             new MenuEntry("Quit", this::quit)
     );
 
-    void createReservation() throws SQLException {
-        System.out.println("Create Reservation");
-
+    void createReservationNewGuest() throws SQLException {
         System.out.print("Enter guest name: ");
         String guestName = stdin.nextLine();
 
-        System.out.print("Enter guest credit card number: ");
+        System.out.print("Enter guest payment method: ");
         String guestPaymentMethod = stdin.nextLine();
 
+        CallableStatement createGuestStatement = connection.prepareCall("{call dbo.createGuest(?,?,?)}");
+        createGuestStatement.setString(1, guestName);
+        createGuestStatement.setString(2, guestPaymentMethod);
+        createGuestStatement.registerOutParameter(3, Types.INTEGER);
+        createGuestStatement.execute();
+        int createdGuestId = createGuestStatement.getInt(3);
+
+        createReservationInternal(createdGuestId);
+    }
+
+    void createReservationExistingGuest() throws SQLException {
+        System.out.print("Enter part or all of guest name to search guests (blank to show all): ");
+        String searchGuestName = stdin.nextLine();
+
+        CallableStatement searchReservationsStatement = connection.prepareCall("{call dbo.searchGuests(?)}");
+        searchReservationsStatement.setString(1, searchGuestName);
+        ResultSet results = searchReservationsStatement.executeQuery();
+
+        System.out.println("option | guest name");
+        List<Integer> guestIdsInOrder = new ArrayList<>();
+        int i = 0;
+        while (results.next()) {
+            int guestId = results.getInt("id");
+            guestIdsInOrder.add(guestId);
+
+            String guestName = results.getNString("name");
+            System.out.println((i + 1) + " | " + guestName);
+
+            i++;
+        }
+
+        System.out.print("Enter selection: ");
+        int chosenIndex = stdin.nextInt() - 1;
+        stdin.nextLine();
+        int guestId = guestIdsInOrder.get(chosenIndex);
+
+        createReservationInternal(guestId);
+    }
+
+    void createReservationInternal(int guestId) throws SQLException {
         System.out.print("Enter start date (e.g. 6/1/23): ");
         Date startDate;
         try {
@@ -68,17 +110,10 @@ public class Main {
             return;
         }
 
-        CallableStatement createGuestStatement = connection.prepareCall("{call dbo.createGuest(?,?,?)}");
-        createGuestStatement.setString(1, guestName);
-        createGuestStatement.setString(2, guestPaymentMethod);
-        createGuestStatement.registerOutParameter(3, Types.INTEGER);
-        createGuestStatement.execute();
-        int createdGuestId = createGuestStatement.getInt(3);
-
         CallableStatement createReservationStatement = connection.prepareCall("{call dbo.createReservation(?,?,?,?)}");
         createReservationStatement.setDate(1, startDate);
         createReservationStatement.setDate(2, endDate);
-        createReservationStatement.setInt(3, createdGuestId);
+        createReservationStatement.setInt(3, guestId);
         createReservationStatement.registerOutParameter(4, Types.INTEGER);
         createReservationStatement.execute();
 
@@ -86,26 +121,75 @@ public class Main {
         System.out.println("Reservation created");
     }
 
-    void checkIn() {
+    int searchReservationByGuestName(String status) throws SQLException {
+        System.out.print("Enter part or all of guest name to search reservations (blank to show all): ");
+        String searchGuestName = stdin.nextLine();
 
+        CallableStatement searchReservationsStatement = connection.prepareCall("{call dbo.searchReservationsByGuestName(?,?)}");
+        searchReservationsStatement.setString(1, searchGuestName);
+        searchReservationsStatement.setString(2, status);
+        ResultSet results = searchReservationsStatement.executeQuery();
+
+        System.out.println("option | guest name | start date | end date");
+        List<Integer> reservationIdsInOrder = new ArrayList<>();
+        int i = 0;
+        while (results.next()) {
+            int reservationId = results.getInt("reservation_id");
+            reservationIdsInOrder.add(reservationId);
+
+            String guestName = results.getNString("name");
+            String startDate = dateFormatter.format(results.getDate("start_date"));
+            String endDate = dateFormatter.format(results.getDate("end_date"));
+            System.out.println((i + 1) + " | " + guestName + " | " + startDate + " | " + endDate);
+
+            i++;
+        }
+
+        System.out.print("Enter selection: ");
+        int chosenIndex = stdin.nextInt() - 1;
+        stdin.nextLine();
+        return reservationIdsInOrder.get(chosenIndex);
+    }
+
+    void checkIn() throws SQLException {
+        int reservationId = searchReservationByGuestName("reserved");
+
+        CallableStatement checkInStatement = connection.prepareCall("{call dbo.updateReservationStatus(?,?)}");
+        checkInStatement.setInt(1, reservationId);
+        checkInStatement.setString(2, "checked_in");
+        checkInStatement.execute();
+        connection.commit();
+        System.out.println("Reservation checked in");
+    }
+
+    void checkOut() throws SQLException {
+        int reservationId = searchReservationByGuestName("checked_in");
+
+        CallableStatement checkInStatement = connection.prepareCall("{call dbo.updateReservationStatus(?,?)}");
+        checkInStatement.setInt(1, reservationId);
+        checkInStatement.setString(2, "checked_out");
+        checkInStatement.execute();
+        connection.commit();
+        System.out.println("Reservation checked out");
     }
 
     void quit() {
-        System.out.println("Goodbye");
         System.exit(0);
     }
 
     void doMainMenu() throws SQLException {
-        System.out.println("Select an option by number:");
+        System.out.println("Select a use case by number:");
         for (int i = 0; i < mainMenu.size(); i++) {
             MenuEntry entry = mainMenu.get(i);
             int userFacingIndex = i + 1;
-            System.out.println(userFacingIndex + ".\t" + entry.description());
+            System.out.println(userFacingIndex + " | " + entry.description());
         }
         System.out.print("Enter selection: ");
         int chosenIndex = stdin.nextInt() - 1;
         stdin.nextLine();
-        mainMenu.get(chosenIndex).code().run();
+        var chosenEntry = mainMenu.get(chosenIndex);
+        System.out.println(chosenEntry.description());
+        chosenEntry.code().run();
     }
 
 
