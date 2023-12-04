@@ -223,7 +223,7 @@ public class Main {
             connection.commit();
             System.out.println("Reservation changed to " + startDate + " to " + endDate + " in room " + roomId);
         } else {
-            System.out.println("Room " + roomId + "cannot be booked during for that time please try a different room or different dates.")
+            System.out.println("Room " + roomId + "cannot be booked during for that time please try a different room or different dates.");
         }
     }
 
