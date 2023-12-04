@@ -205,14 +205,17 @@ public class Main {
             System.out.println("invalid date format");
             return;
         }
+        System.out.print("Enter new room id: ")
+        String roomId = stdin.nextLine();
 
         CallableStatement changeReservationStatement = connection.prepareCall("{call dbo.deleteReservation(?)}");
         changeReservationStatement.setInt(1, reservationId);
         createReservationStatement.setDate(2, startDate);
         createReservationStatement.setDate(3, endDate);
+        createReservationStatement.setString(4, roomId);
         changeReservationStatement.execute();
         connection.commit();
-        System.out.println("Reservation changed to " + startDate + " to " + endDate);
+        System.out.println("Reservation changed to " + startDate + " to " + endDate + " in room " + roomId);
     }
 
     void quit() {
