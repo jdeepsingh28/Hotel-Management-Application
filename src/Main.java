@@ -19,9 +19,21 @@ public class Main {
         void run() throws SQLException;
     }
 
-    record MenuEntry(String description, MenuMethod code) {}
+    static class MenuEntry {
+        private final String description;
+        private final MenuMethod code;
+        MenuEntry(String description, MenuMethod code) {
+            this.description = description;
+            this.code = code;
+        }
+        String description() {
+            return this.description;
+        }
+        MenuMethod code() {
+            return this.code;
+        }
+    }
 
-    // Add more use cases by writing a void method and adding a MenuEntry here
     final List<MenuEntry> mainMenu = List.of(
             new MenuEntry("Create Reservation", this::createReservation),
             new MenuEntry("Quit", this::quit)
@@ -74,6 +86,10 @@ public class Main {
         System.out.println("Reservation created");
     }
 
+    void checkIn() {
+
+    }
+
     void quit() {
         System.out.println("Goodbye");
         System.exit(0);
@@ -95,7 +111,7 @@ public class Main {
 
     public static void main(String[] args) {
         String connectionUrl =
-                "jdbc:sqlserver://10.16.0.75\\jrt108;"
+                "jdbc:sqlserver://cxp-sql-02\\jrt108;"
                         + "database=Hotel;"
                         + "user=dbuser;"
                         + "password=csds341143sdsc;"
