@@ -8,10 +8,10 @@ import java.sql.Statement;
 import java.sql.Types;
 
 public class DatabaseConnection {
-    private static final String CONNECTION_URL = "jdbc:sqlserver://cxp-sql-02.cxp.cwru.edu\\jrt108;"
-                        + "database=Hotel;"
-                        + "user=dbuser;"
-                        + "password=csds341143sdsc;"
+    private static final String CONNECTION_URL = "######################;"
+                        + "database=######;"
+                        + "user=##########;"
+                        + "password=#############;"
                         + "encrypt=true;"
                         + "trustServerCertificate=true;"
                         + "loginTimeout=15;";
